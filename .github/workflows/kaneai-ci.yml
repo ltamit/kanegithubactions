@@ -56,7 +56,8 @@ jobs:
           echo "📡 Fetching status for App Job ID: $app_job_id"
 
           status_response=$(curl -s -X GET "https://api.hyperexecute.cloud/v2.0/job/$app_job_id" \
-            -H "accept: application/json")
+            -H "accept: application/json" \
+            -H "Authorization: Basic ${{ secrets.LT_AUTH_BASE64 }}")
 
           echo "Status Response: $status_response"
 
