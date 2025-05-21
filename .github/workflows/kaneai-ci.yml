@@ -30,19 +30,7 @@ jobs:
               "test_run_id": "${{ github.event.inputs.test_run_id }}",
               "concurrency": 1,
               "title": "${{ github.event.inputs.title }}",
-              "region": "${{ github.event.inputs.region }}",
-              "tunnel": "tunnel-name",
-              "accessibility": false,
-              "replaced_url": [
-                {
-                  "pattern_url": "TEST_URL_1",
-                  "replacement_url": "REPLACED_TEST_URL_1"
-                },
-                {
-                  "pattern_url": "TEST_URL_2",
-                  "replacement_url": "REPLACED_TEST_URL_2"
-                }
-              ]
+              "region": "${{ github.event.inputs.region }}"
             }')
           
           echo "Response: $response"
