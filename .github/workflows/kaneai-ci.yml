@@ -34,16 +34,16 @@ jobs:
             }')
 
           echo "Response: $response"
-          
-          job_id=$(echo "$response" | jq -r '.job_id // empty')
-          
-          if [[ -z "$job_id" ]]; then
-            echo "❌ Error: job_id not found in the response. Exiting..."
+
+          app_job_id=$(echo "$response" | jq -r '.app_job_id // empty')
+
+          if [[ -z "$app_job_id" ]]; then
+            echo "❌ Error: app_job_id not found in the response. Exiting..."
             exit 1
           fi
 
-          echo "✅ Job ID: $job_id"
-          echo "job_id=$job_id" >> $GITHUB_OUTPUT
+          echo "✅ App Job ID: $app_job_id"
+          echo "app_job_id=$app_job_id" >> $GITHUB_OUTPUT
 
       - name: Wait for 5 minutes
         run: |
@@ -52,15 +52,14 @@ jobs:
 
       - name: Fetch and Print Job Status
         run: |
-          job_id=${{ steps.trigger.outputs.job_id }}
-          echo "📡 Fetching status for job ID: $job_id"
+          app_job_id=${{ steps.trigger.outputs.app_job_id }}
+          echo "📡 Fetching status for App Job ID: $app_job_id"
 
-          status_response=$(curl -s -X GET "https://api.hyperexecute.cloud/v2.0/job/$job_id" \
+          status_response=$(curl -s -X GET "https://api.hyperexecute.cloud/v2.0/job/$app_job_id" \
             -H "accept: application/json")
 
           echo "Status Response: $status_response"
 
-          # Check if response contains expected JSON
           if echo "$status_response" | jq empty 2>/dev/null; then
             status=$(echo "$status_response" | jq -r '.status')
             echo "✅ Job Status: $status"
