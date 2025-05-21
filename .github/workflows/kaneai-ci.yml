@@ -47,7 +47,7 @@ jobs:
 
       - name: Wait for 5 minutes
         run: |
-          echo "⏳ Waiting for 5 minutes before checking status..."
+          echo "⏳ Waiting for 5 minutes before checking job status..."
           sleep 300
 
       - name: Fetch and Print Job Status
@@ -61,8 +61,8 @@ jobs:
           echo "Status Response: $status_response"
 
           if echo "$status_response" | jq empty 2>/dev/null; then
-            status=$(echo "$status_response" | jq -r '.status')
-            echo "✅ Job Status: $status"
+            job_status=$(echo "$status_response" | jq -r '.data.status')
+            echo "✅ Job Status: $job_status"
           else
             echo "❌ Error: Invalid JSON response. Raw response:"
             echo "$status_response"
