@@ -32,25 +32,40 @@ jobs:
               "title": "${{ github.event.inputs.title }}",
               "region": "${{ github.event.inputs.region }}"
             }')
-          
+
           echo "Response: $response"
-          job_id=$(echo "$response" | jq -r '.job_id')
+          
+          job_id=$(echo "$response" | jq -r '.job_id // empty')
+          
+          if [[ -z "$job_id" ]]; then
+            echo "❌ Error: job_id not found in the response. Exiting..."
+            exit 1
+          fi
+
+          echo "✅ Job ID: $job_id"
           echo "job_id=$job_id" >> $GITHUB_OUTPUT
 
       - name: Wait for 5 minutes
         run: |
-          echo "Waiting for 5 minutes before fetching job status..."
+          echo "⏳ Waiting for 5 minutes before checking status..."
           sleep 300
 
       - name: Fetch and Print Job Status
         run: |
           job_id=${{ steps.trigger.outputs.job_id }}
-          echo "Fetching status for job ID: $job_id"
+          echo "📡 Fetching status for job ID: $job_id"
 
           status_response=$(curl -s -X GET "https://api.hyperexecute.cloud/v2.0/job/$job_id" \
             -H "accept: application/json")
-          
+
           echo "Status Response: $status_response"
-          
-          status=$(echo "$status_response" | jq -r '.status')
-          echo "Job Status: $status"
+
+          # Check if response contains expected JSON
+          if echo "$status_response" | jq empty 2>/dev/null; then
+            status=$(echo "$status_response" | jq -r '.status')
+            echo "✅ Job Status: $status"
+          else
+            echo "❌ Error: Invalid JSON response. Raw response:"
+            echo "$status_response"
+            exit 1
+          fi
